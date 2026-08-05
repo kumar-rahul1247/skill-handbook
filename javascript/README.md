@@ -294,3 +294,286 @@ In JavaScript, `call`, `apply`, and `bind` are methods that allow you to control
   | `bind` | No                            | (Optional) preset, then rest     | New function      |
 
 </details>
+
+---
+
+<details>
+    <summary>
+        <span style="font-size: 18px; color: #279CF5">What is the Difference Between setTimeout, setInterval, setImmediate, process.nextTick ?</span>
+    </summary>
+    </br>
+
+In Node.js, asynchronous operations are managed by the **Event Loop**. 
+Methods like `process.nextTick`, `setTimeout`, `setInterval`, and `setImmediate` dictate **when** scheduled callbacks execute relative to the event loop's phases and microtask queues.
+
+### **Execution Priority Overview**
+
+```text
+1. Microtask Queue (Highest Priority)
+   ├── process.nextTick()
+   └── Promise callbacks (.then, async/await)
+─────────────────────────────────────────────
+2. Event Loop Phases (Macrotasks)
+   ├── Timers Phase    ---> setTimeout(), setInterval()
+   ├── Poll Phase      ---> I/O callbacks, network, fs
+   └── Check Phase     ---> setImmediate()
+```
+### **1. `setTimeout`**
+
+  - **Description:**  
+    The `setTimeout()` method sets a timer which executes a function or specified piece of code **once** the timer expires.
+
+  - **Syntax:**
+    ```js
+    var timerId = setTimeout(function, delayInMs, arg1, arg2, ...);
+    ```
+
+  - **Example:**
+    ```js
+    function greet(name) {
+      console.log("Hello, " + name + "!");
+    }
+
+    // Schedule greet to run once after 2000ms (2 seconds)
+    var timerId = setTimeout(greet, 2000, "Alice");
+
+    // Cancel the timeout before it runs
+    // clearTimeout(timerId);
+    ```
+
+---
+
+### **2. `setInterval`**
+
+  - **Description:**  
+    The `setInterval()` method repeatedly calls a function or executes a code snippet, with a fixed time delay between each call.
+
+  - **Syntax:**
+    ```js
+    var intervalId = setInterval(function, delayInMs, arg1, arg2, ...);
+    ```
+
+  - **Example:**
+    ```js
+    var count = 1;
+
+    var intervalId = setInterval(function() {
+      console.log("Tick: " + count);
+      count++;
+
+      // Stop after 3 ticks
+      if (count > 3) {
+        clearInterval(intervalId);
+      }
+    }, 1000);
+
+    // Output:
+    // Tick: 1 (after 1s)
+    // Tick: 2 (after 2s)
+    // Tick: 3 (after 3s)
+    ```
+
+### **3. `setInterval` vs Recursive `setTimeout`**
+
+Using `setInterval` can cause issues if the task inside takes longer to finish than the interval delay itself (causing calls to queue up or overlap). A common pattern to prevent this is **Recursive `setTimeout`**, which guarantees a fixed gap *between* executions.
+
+  - **`setInterval` (Fixed Interval Rate):**
+    ```js
+    // Function runs every 1000ms regardless of how long task() takes
+    setInterval(function task() {
+      // If this takes 1500ms, execution overlaps
+    }, 1000);
+    ```
+
+  - **Recursive `setTimeout` (Guaranteed Gap Delay):**
+    ```js
+    // Guarantees a full 1000ms pause AFTER task() finishes running
+    setTimeout(function task() {
+      // Perform work here...
+      
+      setTimeout(task, 1000); // Reschedule after completion
+    }, 1000);
+    ```
+
+### **4. `setImmediate` vs `process.nextTick`**
+
+In Node.js, both `process.nextTick` and `setImmediate` allow you to schedule callbacks asynchronously, but they operate at different stages of the execution cycle and with different priorities.
+
+---
+
+#### **Quick Comparison**
+
+| Feature | `process.nextTick` | `setImmediate` |
+|---|---|---|
+| **Queue / Phase** | Microtask Queue (Node-specific) | Check Phase (Macrotask) |
+| **Execution Timing** | Runs **immediately** after the current synchronous script, before the Event Loop continues or moves to the next phase. | Runs on the **next tick/turn** of the Event Loop, right after I/O events are processed. |
+| **Priority** | **Higher** (executes before `setImmediate` and timers). | **Lower** (executes in the Check phase of the Event Loop). |
+| **Starvation Risk** | High (recursive calls can block I/O completely). | Low (allows the Event Loop to continue processing other tasks). |
+
+---
+
+#### **1. `process.nextTick`**
+
+  - **Description:**  
+    Executes a callback immediately after the current operation completes, bypassing the Event Loop phases entirely. It is used to run microtasks before the Event Loop yields to I/O or timers.
+
+    *NOTE*: Recursive calls to `process.nextTick()` will starve the Event Loop, blocking all file I/O, network requests, and timers.
+
+  - **Syntax:**
+    ```js
+    process.nextTick(function, arg1, arg2, ...);
+    ```
+
+  - **Example:**
+    ```js
+    console.log("1. Start");
+
+    process.nextTick(function() {
+        console.log("2. NextTick Callback");
+    });
+
+    function greet(user, role) {
+        console.log(`Hello, ${user}! Your role is: ${role}`);
+    }
+
+    // Passing "Alice" as 'user' and "Admin" as 'role'
+    process.nextTick(greet, "Alice", "Admin");
+
+    console.log("3. End");
+
+    // Output:
+    // 1. Start
+    // 3. End
+    // 2. NextTick Callback
+    // Hello, Alice! Your role is: Admin
+    ```
+
+---
+
+#### **2. `setImmediate`**
+
+  - **Description:**  
+    Schedules execution for the **Check Phase** of the Event Loop. It runs after I/O events (like reading files or network requests) are handled on the current loop iteration.
+
+  - **Syntax:**
+    ```js
+    var immediateId = setImmediate(function, arg1, arg2, ...);
+    
+    // To cancel:
+    // clearImmediate(immediateId);
+    ```
+
+  - **Example (Inside I/O Callback):**
+    ```js
+    var fs = require("fs");
+
+    fs.readFile(__filename, function() {
+      setTimeout(function() {
+        console.log("setTimeout");
+      }, 0);
+
+      setImmediate(function() {
+        console.log("setImmediate");
+      });
+    });
+
+    // Output (Guaranteed inside I/O callbacks):
+    // setImmediate
+    // setTimeout
+    ```
+
+    ```
+    ┌──────────────────────────┐
+    ┌───>│    1. Timers Phase       │ (setTimeout / setInterval)
+    │    └────────────┬─────────────┘
+    │                 │
+    │    ┌────────────┴─────────────┐
+    │    │    2. Pending Callbacks  │
+    │    └────────────┬─────────────┘
+    │                 │
+    │    ┌────────────┴─────────────┐
+    │    │    3. Poll (I/O) Phase   │ <--- YOU ARE HERE (fs.readFile callback runs)
+    │    └────────────┬─────────────┘      When fs.readFile finishes, loop moves directly to:
+    │                 │
+    │    ┌────────────┴─────────────┐
+    │    │    4. Check Phase        │ <--- setImmediate runs HERE NEXT!
+    │    └────────────┬─────────────┘
+    │                 │
+    └─────────────────┘
+    ```
+---
+
+#### **3. Execution Priority Order**
+
+When combined, asynchronous tasks execute in a strict hierarchy:
+
+```js
+console.log("1. Synchronous");
+
+setTimeout(function() {
+  console.log("4. setTimeout");
+}, 0);
+
+setImmediate(function() {
+  console.log("5. setImmediate");
+});
+
+process.nextTick(function() {
+  console.log("2. process.nextTick");
+});
+
+Promise.resolve().then(function() {
+  console.log("3. Promise Microtask");
+});
+
+console.log("6. Synchronous End");
+
+// Output:
+// 1. Synchronous
+// 6. Synchronous End
+// 2. process.nextTick
+// 3. Promise Microtask
+// 4. setTimeout
+// 5. setImmediate
+```
+
+```
+START OF NODE.JS PROCESS
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │  Execute Main Sync Script │  <--- Schedules setTimeout(..., 0) & setImmediate(...)
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │     Microtask Queue Check     │  <--- process.nextTick() & Promises run first
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+       ENTER EVENT LOOP PHASES
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │     1. Timers Phase       │  <--- setTimeout(..., 0) RUNS HERE FIRST!
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │   2. Pending / I/O Phase  │
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │     3. Poll Phase         │  <--- Handles I/O callbacks & waiting
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │     4. Check Phase        │  <--- setImmediate() RUNS HERE LATER!
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+         (Loop repeats...)
+```
+</details>
