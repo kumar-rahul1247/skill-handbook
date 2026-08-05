@@ -3,7 +3,7 @@
 <br>
 <details>
     <summary>
-        <span style="font-size: 16px; color: #279CF5">What is JavaScript?</span>
+        <span style="font-size: 18px; color: #279CF5">What is JavaScript?</span>
     </summary>
     </br>
 
@@ -14,7 +14,7 @@
 
 <details>
     <summary>
-        <span style="font-size: 16px; color: #279CF5">What is Closure in JavaScript?</span>
+        <span style="font-size: 18px; color: #279CF5">What is Closure in JavaScript?</span>
     </summary>
     </br>
 
@@ -55,7 +55,7 @@ During the Creation Phase of the Execution Context, the JavaScript engine scans 
 ---
 <details>
     <summary>
-        <span style="font-size: 16px; color: #279CF5">What is Hoisting in Javascript ?</span>
+        <span style="font-size: 18px; color: #279CF5">What is Hoisting in Javascript ?</span>
     </summary>
     </br>
 
@@ -111,7 +111,7 @@ During the Creation Phase of the Execution Context, the JavaScript engine scans 
 
 <details>
     <summary>
-        <span style="font-size: 16px; color: #279CF5">How JavaScript work? What is Creation Phase, Execution Phase, Call Stack/Execution Stack.</span>
+        <span style="font-size: 18px; color: #279CF5">How JavaScript work? What is Creation Phase, Execution Phase, Call Stack/Execution Stack.</span>
     </summary>
     </br>
 
@@ -157,7 +157,7 @@ Every time JavaScript code runs, it creates an Execution Context in two distinct
 ---
 <details>
     <summary>
-        <span style="font-size: 16px; color: #279CF5">Event loop in Javascript</span>
+        <span style="font-size: 18px; color: #279CF5">Event loop in Javascript</span>
     </summary>
     </br>
 
@@ -192,4 +192,105 @@ To avoid any confusion during interviews or code execution analysis, keep this d
 | **Examples** | `Promise.then()`, `queueMicrotask()`, `MutationObserver`, `process.nextTick (Node.js)` | `setTimeout`, `setInterval`, `setImmediate`, I/O, UI rendering, DOM events |
 | **Priority** | Higher Priority | Lower Priority |
 | **Event Loop Behavior** | Empties the **entire queue** (including nested microtasks) before moving to the next macrotask. | Executes **one** task per Event Loop tick, then moves to microtasks/rendering. |
+</details>
+
+---
+
+<details>
+    <summary>
+        <span style="font-size: 18px; color: #279CF5">What is the Difference Between call, apply, and bind</span>
+    </summary>
+    </br>
+
+In JavaScript, `call`, `apply`, and `bind` are methods that allow you to control the `this` value in which a function is executed. While their purposes are similar, they differ in:
+- how they handle arguments
+- when the function is invoked.
+
+### `call`
+
+  - **Description:**  
+    The `call()` method invokes a function immediately, allowing you to specify the value of `this` and pass arguments individually (comma-separated).
+
+    *NOTE*: The `call()` method invokes the function immediately and does not return a new function.  
+
+  - **Syntax:**
+    ```js
+    func.call(thisArg, arg1, arg2, ...)
+    ```
+
+  - **Example:**
+    ```js
+    var student1 = { firstName: "Emma", lastName: "Rossi" };
+    var student2 = { firstName: "Rey", lastName: "Belly" };
+
+    function sayHello(greet1, greet2) {
+      console.log( greet1 + " " + this.firstName + " " + this.lastName + ", " + greet2 );
+    }
+
+    sayHello.call(student1, "Hyie", "All Good ?"); // Hyie Emma Rossi, All Good ?
+    sayHello.call(student2, "Hyie", "All Good ?"); // Hyie Rey Belly, All Good ?
+    ```
+
+
+### `apply`
+
+  - **Description:**  
+    The `apply()` method is similar to `call()`, but it takes the function arguments as an array (or array-like object) instead of individual arguments.
+
+  - **Syntax:**  
+    ```js
+    func.apply(thisArg, [argsArray])
+    ```
+
+  - **Example:**
+    ```js
+    var student1 = { firstName: "Emma", lastName: "Rossi" };
+    var student2 = { firstName: "Rey", lastName: "Belly" };
+
+    function sayHello(greet1, greet2) {
+      console.log( greet1 + " " + this.firstName + " " + this.lastName + ", " + greet2 );
+    }
+
+    sayHello.apply(student1, ["Hyie", "All Good ?"]); // Hyie Emma Rossi, All Good ?
+    sayHello.apply(student2, ["Hyie", "All Good ?"]); // Hyie Rey Belly, All Good ?
+    ```
+
+
+### `bind`
+
+  - **Description:**  
+    The `bind()` method creates a new function with a specific `this` value and, optionally, persists initial arguments.
+      - The `bind()` method returns a new function with a permanently set `this` value.
+      - The first argument defines the `this` context.
+      - Additional arguments are stored and used when the new function runs.
+
+  - **Syntax:**  
+    ```js
+    var boundFunc = func.bind(thisArg, arg1, arg2, ...)
+    ```
+
+  - **Example:**
+    ```js
+    var student1 = { firstName: "Emma", lastName: "Rossi" };
+    var student2 = { firstName: "Rey", lastName: "Belly" };
+
+    function sayHello(greet1, greet2) {
+      console.log( greet1 + " " + this.firstName + " " + this.lastName + ", " + greet2 );
+    }
+
+    var sayHelloStudent1 = sayHello.bind(student1);
+    var sayHelloStudent2 = sayHello.bind(student2);
+
+    sayHelloStudent1("Hello", "How are you?"); // Hello Emma Rossi, How are you?
+    sayHelloStudent2("Hello", "How are you?"); // Hello Rey Belly, How are you?
+    ```
+
+#### Summary
+
+  | Method | Invokes Function Immediately? | How Arguments Are Passed         | Returns      |
+  |--------|-------------------------------|----------------------------------|--------------|
+  | `call` | Yes                           | Comma-separated                  | Function's result |
+  | `apply`| Yes                           | Array or array-like object       | Function's result |
+  | `bind` | No                            | (Optional) preset, then rest     | New function      |
+
 </details>
