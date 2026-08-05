@@ -7,7 +7,7 @@
     </summary>
     </br>
 
-    JavaScript is a lightweight, high-level programming language used to make web pages interactive. It runs in the browser and can also be used on the server side with Node.js.
+ JavaScript is a lightweight, high-level programming language used to make web pages interactive.  It runs in the browser and can also be used on the server side with Node.js.
 </details>
 
 ---
@@ -18,8 +18,8 @@
     </summary>
     </br>
 
-    A closure in JavaScript is a function that remembers and can access variables from its outer (parent) lexical scope, even after that outer function has finished executing and returned.
-    Core Concept
+A closure in JavaScript is a function that remembers and can access variables from its outer (parent) lexical scope, even after that outer function has finished executing and returned.
+Core Concept
 
 When a function is created in JavaScript, it retains a reference to its surrounding state (lexical environment). This gives the inner function access to three scope chains:
 
@@ -47,9 +47,9 @@ console.log(counter()); // Output: 2
 console.log(counter()); // Output: 3
 ```
 
-    Under the Hood (Execution Context)
+Under the Hood (Execution Context)
 
-    During the Creation Phase of the Execution Context, the JavaScript engine scans the code, allocates memory space for all variables and functions, and sets up references. It does not physically move your code lines up; it simply sets up memory before executing line-by-line in the Execution Phase.
+During the Creation Phase of the Execution Context, the JavaScript engine scans the code, allocates memory space for all variables and functions, and sets up references. It does not physically move your code lines up; it simply sets up memory before executing line-by-line in the Execution Phase.
 </details>
 
 ---
@@ -59,7 +59,7 @@ console.log(counter()); // Output: 3
     </summary>
     </br>
 
-    Hoisting is JavaScript's default behavior of moving variable, function, and class declarations to the top of their containing scope (global or local) during the compilation phase, before the code is executed.
+Hoisting is JavaScript's default behavior of moving variable, function, and class declarations to the top of their containing scope (global or local) during the compilation phase, before the code is executed.
 
 **How Different Declarations Behave**
 
@@ -102,9 +102,9 @@ var sayHi = () => {
 };
 
 ```
-    Under the Hood (Execution Context)
+Under the Hood (Execution Context)
 
-    During the Creation Phase of the Execution Context, the JavaScript engine scans the code, allocates memory space for all variables and functions, and sets up references. It does not physically move your code lines up; it simply sets up memory before executing line-by-line in the Execution Phase.
+During the Creation Phase of the Execution Context, the JavaScript engine scans the code, allocates memory space for all variables and functions, and sets up references. It does not physically move your code lines up; it simply sets up memory before executing line-by-line in the Execution Phase.
 </details>
 
 ---
@@ -115,10 +115,10 @@ var sayHi = () => {
     </summary>
     </br>
 
-    JavaScript executes code through a two-phase process managed by the engine, using memory structures to track execution.
+JavaScript executes code through a two-phase process managed by the engine, using memory structures to track execution.
 
-        * Creation Phase
-        * Execution Phase
+    * Creation Phase
+    * Execution Phase
 
 Every time JavaScript code runs, it creates an Execution Context in two distinct phases:
 
@@ -184,7 +184,6 @@ The event loop continuously checks whether the call stack is empty and whether t
 * **Event Loop**: It continuously checks the call stack and, if empty, moves tasks from the queue to the stack for execution.
 
 ### Microtask Queue vs. Macrotask (Task) Queue
-
 To avoid any confusion during interviews or code execution analysis, keep this distinction in mind:
 
 | Feature | Microtask Queue | Macrotask Queue (Task Queue / Callback Queue) |
