@@ -14,7 +14,7 @@
 
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5">What is Closure in JavaScript?</span>
+        <span style="font-size: 18px; color: #279CF5">What is Closure ?</span>
     </summary>
     </br>
 
@@ -55,7 +55,7 @@ During the Creation Phase of the Execution Context, the JavaScript engine scans 
 ---
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5">What is Hoisting in Javascript ?</span>
+        <span style="font-size: 18px; color: #279CF5">What is Hoisting ?</span>
     </summary>
     </br>
 
@@ -158,7 +158,7 @@ Every time JavaScript code runs, it creates an Execution Context in two distinct
 
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5">Event loop in Javascript</span>
+        <span style="font-size: 18px; color: #279CF5">What is Event loop ?</span>
     </summary>
     </br>
 
@@ -199,7 +199,7 @@ To avoid any confusion during interviews or code execution analysis, keep this d
 
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5">What is the Difference Between setTimeout, setInterval, setImmediate, process.nextTick ?</span>
+        <span style="font-size: 18px; color: #279CF5">What is the Difference between setTimeout, setInterval, setImmediate, process.nextTick ?</span>
     </summary>
     </br>
 
@@ -482,7 +482,7 @@ START OF NODE.JS PROCESS
 
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5">What is the Difference Between call, apply, and bind</span>
+        <span style="font-size: 18px; color: #279CF5">What is the Difference between call, apply, and bind method ?</span>
     </summary>
     </br>
 
@@ -583,7 +583,7 @@ In JavaScript, `call`, `apply`, and `bind` are methods that allow you to control
 
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5"> In JavaScript What Temporal Dead Zone (TDZ) ?</span>
+        <span style="font-size: 18px; color: #279CF5"> What Temporal Dead Zone (TDZ) ?</span>
     </summary>
     </br>
 
@@ -664,7 +664,7 @@ In JavaScript, `call`, `apply`, and `bind` are methods that allow you to control
 
 <details>
     <summary>
-        <span style="font-size: 18px; color: #279CF5">JavaScript Variable Declarations: `var`, `let`, and `const`</span>
+        <span style="font-size: 18px; color: #279CF5">Variable Declarations: `var`, `let`, and `const` </span>
     </summary>
     </br>
 
