@@ -155,6 +155,7 @@ Every time JavaScript code runs, it creates an Execution Context in two distinct
 </details>
 
 ---
+
 <details>
     <summary>
         <span style="font-size: 18px; color: #279CF5">Event loop in Javascript</span>
@@ -579,3 +580,241 @@ In JavaScript, `call`, `apply`, and `bind` are methods that allow you to control
 </details>
 
 ---
+
+<details>
+    <summary>
+        <span style="font-size: 18px; color: #279CF5"> In JavaScript What Temporal Dead Zone (TDZ) ?</span>
+    </summary>
+    </br>
+
+  ### Technical Definition
+  > **TDZ** is the time period when a variable exists, but accessing it before its **initialization line** throws an error.
+
+  ---
+
+  ### Internal Mechanism
+  > It is **declared, but uninitialized**. 
+  > *(Accessing it during this window triggers a `ReferenceError: Cannot access variable before initialization`)*
+
+  ---
+
+  ### Standard Definition
+  > The **Temporal Dead Zone (TDZ)** is the time period between entering a scope and initializing a variable (`let` or `const`), during which accessing that variable throws a `ReferenceError`.
+
+  ---
+
+  ### TL;DR
+  > **In short:** It is the zone where a variable exists, but cannot be used yet.
+
+  ```
+┌──────────────────────────────────────────────┐
+│  Scope Entered  ──>  Variable Hoisted        │
+├──────────────────────────────────────────────┤
+│                                              │
+│  TEMPORAL DEAD ZONE (TDZ)                    │
+│  - Variable exists in scope                  │
+│  - Memory reference is uninitialized         │
+│  - Read/Write throws ReferenceError          │
+│                                              │
+├──────────────────────────────────────────────┤
+│  let x = 10;   ──>  Initialization Line      │
+└──────────────────────────────────────────────┘
+│  TDZ Ends      ──>  Normal Execution         │
+--──────────────────────────────────────────────
+  ```
+
+### Technical Lifecycle: `var` vs `let` / `const`
+
+* `var` Lifecycle: Declaration and Initialization happen simultaneously at scope entry.
+
+```javascript
+  // 1. Declaration + Initialization (hoisted as undefined)
+  console.log(a); // Output: undefined
+  var a = 5;      // 2. Assignment
+```
+
+* `let` / `const` Lifecycle: Declaration is hoisted, but Initialization is deferred to the actual line of code.
+```javascript
+  // 1. Declaration (hoisted, TDZ begins)
+  console.log(b); // Uncaught ReferenceError: Cannot access 'b' before initialization
+  let b = 5;      // 2. Initialization + Assignment (TDZ ends)
+```
+
+### Key Technical Behaviors
+
+* Temporal, Not Spatial: The TDZ is bounded by time (execution order), not physical line numbers.
+
+```javascript
+  const fn = () => console.log(val); // Fine: fn is defined, not called yet
+  let val = 100;                     // TDZ ends here
+  fn();                              // Output: 100
+```
+
+* Typeof Safety Break: Standard typeof normally returns "undefined" for undeclared variables, but inside the TDZ it throws a ReferenceError.
+
+```javascript
+  console.log(typeof undeclaredVar); // Output: "undefined"
+  console.log(typeof tdzVar);        // ReferenceError
+  let tdzVar;
+```
+</details>
+
+----
+
+
+<details>
+    <summary>
+        <span style="font-size: 18px; color: #279CF5">JavaScript Variable Declarations: `var`, `let`, and `const`</span>
+    </summary>
+    </br>
+
+ In JavaScript, variables can be declared using three different keywords: `var`, `let`, and `const`. 
+ While they all serve the primary purpose of storing data. 
+ They differ significantly in terms of **scope**, **hoisting**, **re-declaration**, and **mutability**.
+
+## Quick Summary Comparison
+
+  | Feature | `var` | `let` | `const` |
+  | :--- | :--- | :--- | :--- |
+  | **Scope** | Function Scope | Block Scope | Block Scope |
+  | **Hoisting** | Hoisted (initialized as `undefined`) | Hoisted (in Temporal Dead Zone) | Hoisted (in Temporal Dead Zone) |
+  | **Re-declaration** | Allowed in the same scope | Not allowed in the same scope | Not allowed in the same scope |
+  | **Re-assignment** | Allowed | Allowed | Not allowed |
+  | **Initial Value** | Optional | Optional | **Mandatory** upon declaration |
+
+---
+
+## 1. `var` (Function Scoped & Legacy)
+
+  `var` is the original variable declaration keyword in JavaScript (prior to ES6/ES2015).
+
+  ### Key Characteristics:
+  * **Function Scope:** `var` variables are scoped to the nearest enclosing function. They ignore block structures like `if` statements or `for` loops.
+  * **Hoisting:** `var` declarations are hoisted to the top of their function or global scope and initialized with `undefined`.
+  * **Re-declaration & Re-assignment:** You can re-declare and re-assign a `var` variable within the same scope without throwing an error.
+
+### Code Examples:
+
+  ```javascript
+  // Scope behavior
+  function varScopeExample() {
+    if (true) {
+      var x = 10;
+    }
+    console.log(x); // 10 (accessible outside the block!)
+  }
+
+  // Hoisting behavior
+  console.log(a); // undefined (declaration hoisted, but not value)
+  var a = 5;
+
+  // Re-declaration
+  var b = 1;
+  var b = 2; // Allowed
+  console.log(b); // 2
+  ```
+
+---
+
+## 2. `let` (Block Scoped & Re-assignable)
+
+  Introduced in ES6, `let` provides modern block-level scoping and safer variable handling.
+
+  ### Key Characteristics:
+  * **Block Scope:** `let` variables are restricted to the block (enclosed by `{}`) in which they are declared (e.g., inside `if` statements, loops, or functions).
+  * **Temporal Dead Zone (TDZ):** `let` variables are hoisted, but accessing them before their declaration results in a `ReferenceError`.
+  * **No Re-declaration:** You cannot re-declare a `let` variable within the same block scope.
+
+### Code Examples:
+
+```javascript
+  // Scope behavior
+  if (true) {
+    let y = 20;
+    console.log(y); // 20
+  }
+  // console.log(y); // ReferenceError: y is not defined
+
+  // Temporal Dead Zone (TDZ)
+  // console.log(c); // ReferenceError: Cannot access 'c' before initialization
+  let c = 10;
+
+  // Re-assignment vs Re-declaration
+  let count = 1;
+  count = 2; // Allowed (re-assignment)
+  // let count = 3; // SyntaxError: Identifier 'count' has already been declared
+```
+
+---
+
+## 3. `const` (Block Scoped & Immutable Reference)
+
+  Also introduced in ES6, `const` stands for "constant" and is used to declare values that should not be re-assigned.
+
+  ### Key Characteristics:
+  * **Block Scope:** Same block-scoping behavior as `let`.
+  * **Must Be Initialized:** A `const` variable must be assigned a value during declaration.
+  * **Immutable Reference (Not Immutable Value):** You cannot re-assign a `const` variable to a new value or memory address. However, if the value is an **object or array**, its properties/elements can still be modified.
+
+  ### Code Examples:
+
+```javascript
+  // Initialization requirement
+  // const Z; // SyntaxError: Missing initializer in const declaration
+  const Z = 100;
+
+  // Re-assignment attempt
+  // Z = 200; // TypeError: Assignment to constant variable.
+
+  // Objects and Arrays with const
+  const user = { name: 'Alice', age: 25 };
+
+  // Modifying properties IS allowed:
+  user.age = 26; 
+  user.city = 'New York';
+  console.log(user); // { name: 'Alice', age: 26, city: 'New York' }
+
+  // Re-assigning the object reference is NOT allowed:
+  // user = { name: 'Bob' }; // TypeError: Assignment to constant variable.
+  ```
+
+---
+
+## Detailed Feature Comparison
+
+### A. Scope: Function vs. Block
+```javascript
+  function scopeDemo() {
+    if (true) {
+      var varVariable = "I am var";
+      let letVariable = "I am let";
+      const constVariable = "I am const";
+    }
+
+    console.log(varVariable); // Works: "I am var" - Its functional scope
+    // console.log(letVariable); // ReferenceError - Reason: let declared in if block and accessing outside block
+    // console.log(constVariable); // ReferenceError - Reason: const declared in if block and accessing outside block
+  }
+```
+
+### B. Hoisting & Temporal Dead Zone (TDZ)
+  Hoisting moves declarations to the top of their scope during compilation.
+  * `var` is hoisted and initialized as `undefined`.
+  * `let` and `const` are hoisted, but remain uninitialized in the **Temporal Dead Zone (TDZ)** until the code reaches their declaration line.
+
+```javascript
+  console.log(varNum); // Output: undefined - Hoisted 
+  var varNum = 10;
+
+  console.log(letNum); // Throws ReferenceError - Hoisted but Temoral Dead Zone Feature throw error
+  let letNum = 20;
+```
+
+---
+
+## Best Practices & Recommendations
+
+  1. **Default to `const`:** Use `const` for most variable declarations. It prevents accidental re-assignments and makes intent clear.
+  2. **Use `let` when re-assignment is needed:** Use `let` for variables that will change over time, such as loop counters, flags, or accumulator values.
+  3. **Avoid `var`:** Modern JavaScript code bases generally avoid `var` entirely due to unpredictable scoping issues and hoisting side effects.
+</details>
